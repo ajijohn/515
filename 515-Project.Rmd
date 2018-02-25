@@ -1,0 +1,76 @@
+---
+title: "BIOST 515-Project"
+author: "Michael Cork, Claire Rothschild,  Baohai WattShao, Aji John"
+date: "Winter Quarter 2018"
+output:
+  pdf_document: default
+---
+
+
+We are interested in changes in plasma lipid biomarkers for coronary heart disease (CHD) after hormone replacementtherapy in a sample of 2,763 womenfrom the Heart and Estrogen/progestin Replacement Study (HERS). HERS wasa randomized, double-blind, placebo-controlled trial designed to test the efficacy and safety of estrogen plus progestin therapy for prevention of recurrent coronary heart disease (CHD) events in women.  
+
+```{r setup, include=FALSE}
+### Setting up the packages, options we'll need:
+library(knitr)
+library(ggplot2)
+library(tidyverse)
+library(uwIntroStats)
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+    
+# Questions of interest
+The data tobe analyzed for this projectis a subset of the data collected from the 2,763 women in the Heart and Estrogen/progestin Replacement Study (HERS) clinical trial of hormone therapy.The questions to be addressed are:   
+```{r ,echo=FALSE,include=FALSE}
+### Load data
+HERS <- read.csv("data/HERSdatasub.csv",header=TRUE) 
+ 
+
+```
+
+
+
+## 1.
+What associations exist between the plasma lipid biomarkers for CHD at baseline (i.e., prior to randomized treatment assignment) and the available data on participant demographics (age, race, BMI), behavior (smoking, alcohol consumption, physical activity), and available clinical and laboratory measures of organ system functioning (e.g, glucose, blood pressure)? 
+
+## 2.
+Is there any evidence of hormone therapy treatment effects on the plasma lipid biomarkers after one year of treatment?  
+
+### Profile of subjects studied
+
+```{r,echo=FALSE,include=TRUE}
+
+HERS%>% filter(complete.cases(HERS)) %>% group_by(HT,age) %>% 
+  ggplot(aes(age, fill = HT)) + geom_histogram(binwidth = 1) + theme_classic()
+
+```
+
+### BMI Profile of subjects studied by Control/Treatment
+
+```{r ,echo=FALSE,include=TRUE}
+### Is there any evidence HERS
+kable(HERS%>%filter(complete.cases(HERS)) %>% 
+        group_by(HT) %>%
+        summarise(n=n(),sdBMI=sd(BMI),meanBMI=mean(BMI),sdBMI.1=sd(BMI.1),meanBMI.1=mean(BMI.1))%>%
+        select(c('HT','n','meanBMI','sdBMI','meanBMI.1','sdBMI.1')) %>%
+        as.data.frame() , format = "markdown")
+ 
+## HERS%>%filter(complete.cases(HERS)) %>% nrow()
+##[1] 2580
+## HERS%>%nrow()
+## 2763
+
+```
+
+```{r,echo=FALSE,include=TRUE}
+
+
+```
+
+## 3.
+Is there any attenuation ofthe hormone therapy treatment effects after adjustment for known risk factors for CHD? 
+## 4.
+Do any of thehormone therapy treatment effects identified above for the plasma lipid biomarkers differ according to race/ethnicity, statin medication use,smoking behavior, or alcohol consumption.
+
