@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
     
-# Questions of interest
+# Questions of interest to be answered
 The data tobe analyzed for this projectis a subset of the data collected from the 2,763 women in the Heart and Estrogen/progestin Replacement Study (HERS) clinical trial of hormone therapy.The questions to be addressed are:   
 ```{r ,echo=FALSE,include=FALSE}
 ### Load data
