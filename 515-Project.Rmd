@@ -26,7 +26,9 @@ The data tobe analyzed for this projectis a subset of the data collected from th
 ```{r ,echo=FALSE,include=FALSE}
 ### Load data
 HERS <- read.csv("data/HERSdatasub.csv",header=TRUE) 
- 
+HERS$D.HDL <-  round(HERS$HDL.1 - HERS$HDL)
+HERS$D.LDL <-  round(HERS$LDL.1 - HERS$LDL)
+HERS$D.TG <-  round(HERS$TG.1 - HERS$TG)
 
 ```
 
@@ -92,7 +94,113 @@ Is there any attenuation of the hormone therapy treatment effects after adjustme
 
 
 ## 4.
-Do any of thehormone therapy treatment effects identified above for the plasma lipid biomarkers differ according to race/ethnicity, statin medication use,smoking behavior, or alcohol consumption.
+Do any of the hormone therapy treatment effects identified above for the plasma lipid biomarkers differ according to race/ethnicity, statin medication use,smoking behavior, or alcohol consumption.
+
+### Checking by Race
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
 
 
+library(gridExtra)
 
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.LDL)) + geom_boxplot() +
+  ggtitle("LDL.1") +  stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity") + ggtitle("Differ Race/Ethnicity ?")
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.HDL)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity") + ggtitle(" ")
+
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity")  + ggtitle(" ")
+
+grid.arrange(g1, g2, g3,ncol=3)
+```
+
+By looking at the boxplots(SE-Max, Mean, SE-Min), we could hypothesize that TG might be affected by race. We could do an ANOVA to confirm that.
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = D.LDL~  raceth +age + smoking + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = D.LDL~  age + smoking + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+For LDL, the effect is found to be not significant(p-value 0.96), but for TG and HDL, the effect do differ by race/ethnicity(p-value 0.01, and p-value < 0.001 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Race/Ethnicity was omitted in the null model.
+
+### Checking by Statin Use
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.LDL)) + geom_boxplot() +
+  stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use")  + ggtitle("Differ by Statin use ?") 
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.HDL)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use") 
+
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use")  
+
+grid.arrange(g1, g2, g3,ncol=3)
+```
+
+By looking at the boxplots(SE-Max, Mean, SE-Min), we could hypothesize that LDL might be affected by statin use We could do an ANOVA to confirm that.
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = D.LDL ~  raceth +age + smoking + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = D.LDL ~  raceth +age + smoking + drinkany+exercise+diabetes, data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+For TG,and HDL the effect is found to be not significant(p-value = 0.21, and p-value =0.97 respectively), but for LDL, the effect do differ by statin use(p-value < 0.001). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Statin use was omitted in the null model.
+
+### Smoking Behavior
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.LDL)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking") + ggtitle("Differ by Smoking ?") 
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.HDL)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking") 
+
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.TG)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking") 
+
+grid.arrange(g1, g2, g3,ncol=3)
+```
+
+By looking at the boxplots(SE-Max, Mean, SE-Min), we could not really hypothesize the affects by smoking behavior. We could do an ANOVA to confirm which ones are significant
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = D.TG ~  raceth +age + smoking + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = D.TG ~  raceth +age  + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+For TG,LDL,HDL the effect is found to be not significant(p-value = 0.29, p-value = 0.42, and p-value = 0.99 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Smoking indicatir was omitted in the null model.
+
+### Alcohol use
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.LDL)) + geom_boxplot() +
+  stat_summary(
+  colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol")  +ggtitle("Differ by Alcohol use?") 
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.HDL)) + geom_boxplot() +
+ stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol") 
+
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol") 
+
+grid.arrange(g1, g2, g3,ncol=3)
+```
+
+By looking at the boxplots(SE-Max, Mean, SE-Min), we could not really hypothesize the affects by alcohol use. We could do an ANOVA to confirm which ones are significant
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = D.TG ~  raceth +age + smoking + drinkany+exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = D.TG ~  raceth +age + smoking +exercise+statins+diabetes, data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+For TG,LDL,HDL the effect is found to be not significant(p-value = 0.99, p-value = 0.13, and p-value = 0.24 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Drinking indicator was omitted in the null model.
