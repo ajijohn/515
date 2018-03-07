@@ -15,6 +15,7 @@ library(knitr)
 library(ggplot2)
 library(tidyverse)
 library(uwIntroStats)
+library(gridExtra)
 knitr::opts_chunk$set(echo = FALSE)
 
 ```
@@ -96,12 +97,33 @@ Is there any attenuation of the hormone therapy treatment effects after adjustme
 ## 4.
 Do any of the hormone therapy treatment effects identified above for the plasma lipid biomarkers differ according to race/ethnicity, statin medication use,smoking behavior, or alcohol consumption.
 
+### Show the distribution by biomarkers between Placebo and Treatment 
+
+```{r,echo=FALSE,include=TRUE}
+db1<- HERS%>% filter(complete.cases(HERS)) %>% group_by(HT,age) %>% 
+  ggplot(aes(age,D.HDL, color = HT)) + geom_point() + 
+  stat_smooth(size=1.5, method = "loess", level = 0.95, fullrange = TRUE, se = FALSE) +
+  theme_classic() + labs(colour = "")
+db2<- HERS%>% filter(complete.cases(HERS)) %>% group_by(HT,age) %>% 
+  ggplot(aes(age,D.LDL, color = HT)) + geom_point() + 
+  stat_smooth(size=1.5, method = "loess", level = 0.95, fullrange = TRUE, se = FALSE) +
+  theme_classic() + labs(colour = "")
+db3<- HERS%>% filter(complete.cases(HERS)) %>% group_by(HT,age) %>% 
+  ggplot(aes(age,D.TG, color = HT)) + geom_point() + 
+  stat_smooth( method = "loess") +
+  theme_classic() + labs(colour = "")
+grid.arrange(db1, db2, db3,nrow=3)
+
+```
+
+
+
 ### Checking by Race
 
 ```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
 
 
-library(gridExtra)
+
 
 g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.LDL)) + geom_boxplot() +
   ggtitle("LDL.1") +  stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity") + ggtitle("Differ Race/Ethnicity ?")
@@ -176,7 +198,7 @@ oned.null<- glm(formula = D.TG ~  raceth +age  + drinkany+exercise+statins+diabe
 
 anova(oned_alt,oned.null,test = "Chisq")
 ```
-For TG,LDL,HDL the effect is found to be not significant(p-value = 0.29, p-value = 0.42, and p-value = 0.99 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Smoking indicatir was omitted in the null model.
+For TG,LDL,HDL the effect is found to be not significant(p-value = 0.29, p-value = 0.42, and p-value = 0.99 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Smoking indicator was omitted in the null model.
 
 ### Alcohol use
 
@@ -204,3 +226,45 @@ oned.null<- glm(formula = D.TG ~  raceth +age + smoking +exercise+statins+diabet
 anova(oned_alt,oned.null,test = "Chisq")
 ```
 For TG,LDL,HDL the effect is found to be not significant(p-value = 0.99, p-value = 0.13, and p-value = 0.24 respectively). The analysis was facilitated by ANOVA where null model included demograhics(excluding BMI),diabetic indicator and behavior. Drinking indicator was omitted in the null model.
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.LDL)) + geom_boxplot() +
+  ggtitle("LDL.1") +  stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity") 
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.HDL)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity") + ggtitle(" ")
+
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(raceth), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Race/Ethnicity")  + ggtitle(" ")
+
+g4 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.LDL)) + geom_boxplot() +
+  stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use")  
+
+g5 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.HDL)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use") 
+
+g6 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(statins), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Statin Use")  
+
+g7 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.LDL)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking")
+
+g8 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.HDL)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking") 
+
+g9 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(smoking), D.TG)) + geom_boxplot() +
+   stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Smoking") 
+
+g10 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.LDL)) + geom_boxplot() +
+  stat_summary(
+  colour = "red",size=0.5) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol")  
+
+g11 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.HDL)) + geom_boxplot() +
+ stat_summary(colour = "red",size=0.5) + theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol") 
+
+g12 <- HERS%>% filter(complete.cases(HERS)) %>% filter(HT %in%  c('hormone therapy')) %>% ggplot( aes(factor(drinkany), D.TG)) + geom_boxplot() +
+    stat_summary(colour = "red",size=0.5) +theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +     xlab("Alcohol") 
+
+grid.arrange(g1, g2, g3,g4, g5, g6,g7, g8, g9,g10, g11, g12,ncol=3)
+```
