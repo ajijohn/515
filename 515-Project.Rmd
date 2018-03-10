@@ -280,7 +280,101 @@ grid.arrange(g1, g2, g3,g4, g5, g6,g7, g8, g9,g10, g11, g12,ncol=3)
 
 ### Changing direction
 
-Methods : We tested the 
+#### Race and Ethnicity  TG
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = TG.1 ~  HT + as.factor(raceth) + HT * as.factor(raceth) , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = TG.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+#### Race and Ethnicity  LDL.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = LDL.1 ~  HT + as.factor(raceth) + HT * as.factor(raceth) , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = LDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+#### Race and Ethnicity  HDL.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = HDL.1 ~  HT + as.factor(raceth) + HT * as.factor(raceth) , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = HDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+#### Statin and TG
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = TG.1 ~   HT * statins , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = TG.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+#### Statin and LDL.1
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = LDL.1 ~   HT * statins , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = LDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+#### Statin and HDL.1
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = HDL.1 ~   HT * statins , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = HDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+
+#### Smoking and TG.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = TG.1 ~   HT * smoking , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = TG.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+#### Smoking and HDL.1
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = HDL.1 ~   HT * smoking , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = HDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+#### Smoking and LDL.1
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = LDL.1 ~   HT * smoking , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = LDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+#### Alcohol and TG.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = TG.1 ~   HT * drinkany , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = TG.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+#### Alcohol and LDL.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = LDL.1 ~   HT * drinkany , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = LDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
+
+#### Alcohol and HDL.1
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+oned_alt<- glm(formula = HDL.1 ~   HT * drinkany , data = HERS[complete.cases(HERS),])
+oned.null<- glm(formula = HDL.1 ~  HT , data = HERS[complete.cases(HERS),])
+
+anova(oned_alt,oned.null,test = "Chisq")
+```
 
 ## final figures
 
@@ -302,6 +396,21 @@ g3 <- HERS%>% filter(complete.cases(HERS)) %>% ggplot( aes(factor(statins), TG.1
 
 grid.arrange(g1, g2, g3,ncol=3)
 ```
+
+### Treatment vs Placebo - Endpoint
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,include=TRUE}
+g1 <- HERS%>% filter(complete.cases(HERS)) %>% ggplot( aes(factor(HT), LDL.1)) + geom_boxplot() +
+     theme_classic() +  stat_summary(colour = "red",size=0.5)+ theme(axis.text.x = element_text(angle = 90, hjust = 1),legend.position="none")  +  xlab(" ") + ggtitle(" ") 
+
+g2 <- HERS%>% filter(complete.cases(HERS)) %>% ggplot( aes(factor(HT), HDL.1)) + geom_boxplot() +
+     theme_classic() +  stat_summary(colour = "red",size=0.5)+ theme(axis.text.x = element_text(angle = 90, hjust = 1),legend.position="none") +  xlab(" ") + ggtitle(" ") 
+g3 <- HERS%>% filter(complete.cases(HERS)) %>% ggplot( aes(factor(HT), TG.1)) + geom_boxplot() +  stat_summary(colour = "red",size=0.5)+
+     theme_classic() +theme(axis.text.x = element_text(angle = 90, hjust = 1),legend.position="none") +  xlab(" ") + ggtitle(" ") 
+
+grid.arrange(g1, g2, g3,ncol=3)
+```
+
+x-axis 
 
 ### Checking by Race
 
